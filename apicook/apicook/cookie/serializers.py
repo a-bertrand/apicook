@@ -1,5 +1,6 @@
-from models import Article, Ingredient, Recipe
 from rest_framework import serializers
+
+from .models import Article, Ingredient, Recipe
 
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):

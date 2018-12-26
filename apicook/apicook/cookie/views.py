@@ -1,6 +1,7 @@
-from models import Article, Ingredient, Recipe
 from rest_framework import viewsets
-from serializers import ArticleSerializer, IngredientSerializer, RecipeSerializer
+
+from .serializers import ArticleSerializer, IngredientSerializer, RecipeSerializer
+from .models import Article, Ingredient, Recipe
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
