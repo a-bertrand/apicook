@@ -20,8 +20,8 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(max_length=30)
-    text = models.CharField(max_length=1000)
-    ingredient = models.ManyToManyField("Ingredient", verbose_name=("Ingredient"))
+    text = models.CharField(max_length=1000, blank=True, null=True)
+    ingredient = models.ManyToManyField("Ingredient", verbose_name=("Ingredient"), blank=True)
 
     def __str__(self):
         return self.article.title
