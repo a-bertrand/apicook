@@ -27,4 +27,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('title',)
