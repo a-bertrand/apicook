@@ -6,12 +6,16 @@ from django.db import models
 
 class Article (models.Model): 
     name = models.CharField(max_length=30)
-
+    def __str__(self):
+        return self.name
 
 class Ingredient(models.Model):
     article = models.OneToOneField("Article", verbose_name=("article"), on_delete=models.CASCADE)
     quantity = models.IntegerField("Quantité")
     weight = models.IntegerField("Poids")
+
+    def __str__(self):
+        return self.article.name
 
 
 class Recipe(models.Model):
@@ -19,3 +23,5 @@ class Recipe(models.Model):
     text = models.CharField(max_length=1000)
     ingredient = models.ManyToManyField("Ingredient", verbose_name=("Ingredient"))
 
+    def __str__(self):
+        return self.article.title
