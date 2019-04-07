@@ -1,0 +1,22 @@
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+include/
+bin/
+.vscode/
+tcl/
+Scripts/
+Lib/
+apicook/db.sqlite3
+pip-selfcheck.json
+pyvenv.cfg
+
+apicook/include
+apicook/db.sqlite3
