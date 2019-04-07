@@ -10,6 +10,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    article = ArticleSerializer()
     class Meta:
         model = Ingredient
         fields = '__all__'
