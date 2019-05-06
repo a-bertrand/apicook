@@ -6,11 +6,16 @@ from django.db import models
 
 class Article (models.Model): 
     name = models.CharField(max_length=30)
+    ingredients = models.ForeignKey(
+        "Ingredient", 
+        related_name=("article"), 
+        on_delete=models.CASCADE, 
+        null=True
+    )
     def __str__(self):
         return self.name
 
 class Ingredient(models.Model):
-    article = models.OneToOneField("Article", verbose_name=("article"), on_delete=models.CASCADE)
     quantity = models.IntegerField("Quantité")
     weight = models.IntegerField("Poids")
 
@@ -20,8 +25,16 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(max_length=30)
-    text = models.CharField(max_length=1000, blank=True, null=True)
-    ingredient = models.ManyToManyField("Ingredient", verbose_name=("Ingredient"), blank=True)
-
+    text = models.CharField(
+        max_length=1000, 
+        blank=True, 
+        null=True
+    )
+    ingredients = models.ForeignKey(
+        "Recipe", 
+        verbose_name=("Ingredient"), 
+        on_delete=models.CASCADE,
+        null=True
+    )
     def __str__(self):
-        return self.article.title
+        return self.title

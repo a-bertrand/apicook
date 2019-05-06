@@ -10,7 +10,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 class IngredientViewSet(viewsets.ModelViewSet):
     """
@@ -18,8 +19,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
     """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('article__name',)
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """
