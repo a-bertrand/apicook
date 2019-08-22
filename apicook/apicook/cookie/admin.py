@@ -7,3 +7,11 @@ from .models import Article, Ingredient, Recipe
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    pass
