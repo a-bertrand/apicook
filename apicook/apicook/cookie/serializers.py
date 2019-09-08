@@ -9,14 +9,22 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    article = ArticleSerializer
+    article = ArticleSerializer(many=False)
     class Meta:
         model = Ingredient
         fields = '__all__'
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    ingredients = IngredientSerializer()
+    ingredients = IngredientSerializer(many=True)
+
     class Meta:
         model = Recipe
         fields = '__all__'
+
+    def create(self, validated_data):
+        ingredients_data = validated_data.pop('ingredeints')
+        recipe = Recipe.objects.create(**validated_data)
+        for ingredient in ingredients_data:
+            Ingredient.objects.create(recipe=recipe, **ingredient)
+        return recipe

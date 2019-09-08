@@ -14,13 +14,13 @@ class Ingredient(models.Model):
     article = models.ForeignKey(
         "Article", 
         related_name=("article"), 
-        on_delete=models.CASCADE, 
-        null=True
-    )
-    ingredients = models.ForeignKey(
-        "Recipe", 
-        verbose_name=("Recettes"), 
         on_delete=models.CASCADE
+    )
+    recipes = models.ForeignKey(
+        "Recipe", 
+        verbose_name=("Recette"), 
+        on_delete=models.CASCADE,
+        related_name='ingredients'
     )
 
     def __str__(self):
@@ -31,7 +31,6 @@ class Recipe(models.Model):
         "Category",
         blank=True,
     )
-    image = models.ImageField(upload_to='images', null=True)
     title = models.CharField(max_length=30)
     text = models.CharField(
         'Description',
@@ -48,3 +47,4 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+        

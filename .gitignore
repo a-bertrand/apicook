@@ -19,7 +19,6 @@ pip-selfcheck.json
 pyvenv.cfg
 
 apicook/include
-apicook/db.sqlite3
 venv/
 .Python
 envname/
