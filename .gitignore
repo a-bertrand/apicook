@@ -20,3 +20,8 @@ pyvenv.cfg
 
 apicook/include
 apicook/db.sqlite3
+venv/
+.Python
+envname/
+django/
+.idea/
