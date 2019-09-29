@@ -13,6 +13,6 @@ router.register(r'ingredients', IngredientViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api/', include(router.urls)),
-    path('shop-recipes/', ListShopRecipe.as_view()),
-    path('shop-recipes/<int:id_shop>', ListShopRecipe.as_view())
+    path('api/shop-recipes/', ListShopRecipe.as_view()),
+    path('api/shop-recipes/<int:id_shop>', ListShopRecipe.as_view())
 ]
