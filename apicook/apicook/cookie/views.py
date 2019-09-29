@@ -34,7 +34,10 @@ class ListShopRecipe(APIView):
     
     def get(self, request, id_shop = None, format=None):
         number_recipe = request.GET.get('number_recipe')
-        excluded_recipe = list(map(int, request.GET.get('excluded_recipe').split(',')))
+        excluded_recipe = []
+        if (request.GET.get('excluded_recipe')) :
+            excluded_recipe = list(map(int, request.GET.get('excluded_recipe').split(',')))
+        
         generate = request.GET.get('generate') == 'true' if request.GET.get('generate') else False
 
         if id_shop:
