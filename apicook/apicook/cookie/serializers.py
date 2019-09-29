@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, Ingredient, Recipe
+from .models import Article, Ingredient, Recipe, Shop
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -28,3 +28,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingredient in ingredients_data:
             Ingredient.objects.create(recipe=recipe, **ingredient)
         return recipe
+
+class ShopSerializer(serializers.ModelSerializer):
+    recipes = RecipeSerializer(many=True)
+
+    class Meta:
+        model = Shop
+        fields = '__all__'
