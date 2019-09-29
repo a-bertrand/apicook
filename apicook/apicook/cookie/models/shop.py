@@ -18,7 +18,7 @@ class Shop (models.Model):
 
         self.recipes.clear()
 
-        recipes = Recipe.objects.order_by("?").exclude(id__in=excluded_ids)[:number_of_recipe]
+        recipes = Recipe.objects.order_by("?").exclude(id__in=excluded_ids)[:int(number_of_recipe)]
 
         for recipe in recipes:
             self.recipes.add(recipe)
