@@ -23,3 +23,20 @@ class Shop (models.Model):
         for recipe in recipes:
             self.recipes.add(recipe)
         self.save()
+
+"""
+    def generate_shop_list():
+        for recipe in self.recipes:
+            for ingredient in recipe.ingredrients:
+                # pour chaque ingredient d'un même article les liés par poids ou quantité
+                select * from ingredient group by article having weight > 0 
+                select * from ingredient group by article having quantity > 0 
+
+                Ingredient.filter(recipe_set=self).order_by(article)
+"""
+
+class ShopList(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    ingredients = models.ManyToManyField("Ingredient")
+    Shop = models.OneToOneField("Shop", on_delete=models.CASCADE)
+    status = models.BooleanField(default=False)

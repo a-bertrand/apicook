@@ -5,7 +5,7 @@ from .views import ArticleViewSet, IngredientViewSet, RecipeViewSet, ListShopRec
 
 router = routers.DefaultRouter()
 router.register(r'articles', ArticleViewSet)
-router.register(r'recipes', RecipeViewSet)
+router.register(r'recipes', RecipeViewSet,  basename='recipes')
 router.register(r'ingredients', IngredientViewSet)
 
 # Wire up our API using automatic URL routing.
