@@ -5,7 +5,7 @@ class Ingredient(models.Model):
     weight = models.IntegerField("Poids", null=True, blank=True)
     article = models.ForeignKey(
         "Article", 
-        related_name=("article"), 
+        related_name=("ingredients"), 
         on_delete=models.CASCADE
     )
     recipes = models.ForeignKey(
@@ -16,4 +16,4 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.article.name 
+        return self.article.name

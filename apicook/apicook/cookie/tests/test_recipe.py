@@ -7,19 +7,18 @@ from apicook.cookie.models import Recipe, Article
 
 
 class TestListRecipe(TestCase):
-    ENDPOINT = reverse("recipes-list")
 
     @classmethod
     def setUpTestData(cls):
         super(TestListRecipe, cls).setUpTestData()
         cls.article = mommy.make('Article', name="tomate")
-        cls.recipe = mommy.make('Recipe', title='tomate mozza')
-        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article, recipes=[cls.recipe])
-        import pdb; pdb.set_trace()
+        cls.recipe = mommy.make(Recipe, title='tomate mozza')
+        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article, recipes=cls.recipe)
 
     def get_request(self):
-        return Client().get(self.ENDPOINT)
-    
+        url = reverse("recipes-list")
+        return Client().get(url)
+
     def test_get_recipes_OK(self):
         response = self.get_request()
         assert response.status_code == HTTPStatus.OK
@@ -46,6 +45,4 @@ class TestListRecipe(TestCase):
                 "categories": []
             },
         ]
-
-
-
+    

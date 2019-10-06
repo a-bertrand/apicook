@@ -1,5 +1,7 @@
 from django.db import models
 from .recipe import Recipe
+from .ingredient import Ingredient
+from django.db.models import Sum
 
 
 class Shop (models.Model): 
@@ -24,16 +26,15 @@ class Shop (models.Model):
             self.recipes.add(recipe)
         self.save()
 
-"""
-    def generate_shop_list():
-        for recipe in self.recipes:
-            for ingredient in recipe.ingredrients:
-                # pour chaque ingredient d'un même article les liés par poids ou quantité
-                select * from ingredient group by article having weight > 0 
-                select * from ingredient group by article having quantity > 0 
-
-                Ingredient.filter(recipe_set=self).order_by(article)
-"""
+    def generate_shopping_list(self):
+        shopping_list = []
+        ingredients = (
+            Ingredient.objects.filter(recipes__in=self.recipes.all())
+            .values('article_id')
+            .annotate(quantity=Sum('quantity')).annotate(weight=Sum('weight'))
+        )
+        
+        return ingredients
 
 class ShopList(models.Model):
     created = models.DateTimeField(auto_now_add=True)

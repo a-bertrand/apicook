@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 from django.urls import path
 from rest_framework import routers
-from .views import ArticleViewSet, IngredientViewSet, RecipeViewSet, ListShopRecipe
+from .views import ArticleViewSet, IngredientViewSet, RecipeViewSet, ListShopRecipe, ShoppingListRecipe
 
 router = routers.DefaultRouter()
 router.register(r'articles', ArticleViewSet)
@@ -13,6 +13,11 @@ router.register(r'ingredients', IngredientViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api/', include(router.urls)),
-    path('api/shop-recipes/', ListShopRecipe.as_view()),
-    path('api/shop-recipes/<int:id_shop>', ListShopRecipe.as_view())
+    path('api/shop-recipes/', ListShopRecipe.as_view(), name='generate-shop-recipes'),
+    path('api/shop-recipes/<int:shop_id>', ListShopRecipe.as_view(), name='regenerate-shop-recipes'),
+    path(
+        'api/shop-recipes/<int:shop_id>/shopping-list', 
+        ShoppingListRecipe.as_view(), 
+        name="shopping-list"
+    ),
 ]
