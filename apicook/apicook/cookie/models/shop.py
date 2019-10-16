@@ -27,17 +27,29 @@ class Shop (models.Model):
         self.save()
 
     def generate_shopping_list(self):
-        shopping_list = []
+        
         ingredients = (
             Ingredient.objects.filter(recipes__in=self.recipes.all())
             .values('article_id')
-            .annotate(quantity=Sum('quantity')).annotate(weight=Sum('weight'))
+            .annotate(quantity=Sum('quantity'))
+            .annotate(weight=Sum('weight'))
         )
-        
-        return ingredients
+        for ingredient in ingredients:
+            if ingredient.quantity:
+                list = ShopList(shop=self)
+                list.ingredients = ingredient
+                lsit.save()
+            elif ingredient.weight:
+                list = ShopList(shop=self)
+                list.ingredients = ingredient
+                lsit.save()
+
+        return self.s
 
 class ShopList(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    ingredients = models.ManyToManyField("Ingredient")
-    Shop = models.OneToOneField("Shop", on_delete=models.CASCADE)
+    ingredients = models.ForeignKey("Ingredient", on_delete=models.CASCADE)
+    is_bought = models.BooleanField(default=False)
+    bought_value = models.IntegerField(null=True)
+    shop = models.OneToOneField("Shop", on_delete=models.CASCADE, related_name="ingredient_list")
     status = models.BooleanField(default=False)
