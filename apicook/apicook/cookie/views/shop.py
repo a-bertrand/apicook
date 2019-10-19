@@ -5,6 +5,9 @@ from apicook.cookie.models import Shop
 from rest_framework.views import APIView
 
 
+"""
+    Generate random recipe list with excluded recipe
+"""
 class GenerateListShopRecipe(APIView):
     
     def get(self, request, shop_id = None, format=None):
@@ -21,7 +24,7 @@ class GenerateListShopRecipe(APIView):
                 if generate:
                     shop.generate_random_recipe(number_recipe, excluded_recipe)
             except Exception as e:
-                #Error TODO
+                #Error TODO make beautiful response
                 return Response()
             
         else:

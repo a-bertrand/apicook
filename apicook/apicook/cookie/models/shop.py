@@ -27,7 +27,6 @@ class Shop (models.Model):
         self.save()
 
     def generate_shopping_list(self):
-        
         ingredients = (
             Ingredient.objects.filter(recipes__in=self.recipes.all())
             .values('article_id')
@@ -38,18 +37,18 @@ class Shop (models.Model):
             if ingredient.quantity:
                 list = ShopList(shop=self)
                 list.ingredients = ingredient
-                lsit.save()
+                list.save()
             elif ingredient.weight:
                 list = ShopList(shop=self)
                 list.ingredients = ingredient
-                lsit.save()
+                list.save()
+        return 
 
-        return self.s
 
 class ShopList(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    ingredients = models.ForeignKey("Ingredient", on_delete=models.CASCADE)
+    ingredients = models.ForeignKey("Ingredient", null=True, on_delete=models.CASCADE)
     is_bought = models.BooleanField(default=False)
     bought_value = models.IntegerField(null=True)
-    shop = models.OneToOneField("Shop", on_delete=models.CASCADE, related_name="ingredient_list")
+    shop = models.OneToOneField("Shop", on_delete=models.CASCADE, null=True, related_name="ingredient_list")
     status = models.BooleanField(default=False)
