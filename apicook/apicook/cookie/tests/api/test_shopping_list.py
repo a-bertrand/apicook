@@ -24,7 +24,7 @@ class TestShoppingList(TestCase):
 
 
     def get_request(self, shop_id):
-        url = reverse("shopping-list", kwargs={'shop_id':shop_id})
+        url = reverse("shopping-recipe-list", kwargs={'shop_id':shop_id})
         return Client().get(url)
     
     def get_request_generate(self, number_recipe = 1):
@@ -47,15 +47,21 @@ class TestShoppingList(TestCase):
         response = self.get_request(shop_id)
         assert response.json() == [
             {
-                'quantity': 3,
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 1,
                 'name': 'tomate',
-                'weight': None,
+                'quantity': 3,
+                'weight': None
             },
             {
-                'quantity': 1,
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 2,
                 'name': 'mozza',
-                'weight': None,
-            } 
+                'quantity': 1,
+                'weight': None
+            }  
         ]
 
     def test_get_list_of_ingredients_in_shop_list_with_weight(self):
@@ -74,13 +80,27 @@ class TestShoppingList(TestCase):
         response = self.get_request(shop_id)
         assert response.json() == [
             {
-                'quantity': 1,
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 1,
                 'name': 'tomate',
-                'weight': 2,
+                'quantity': 1,
+                'weight': None
             },
             {
-                'quantity': 1,
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 2,
+                'name': 'tomate',
+                'quantity': None,
+                'weight': 2
+            },
+            {
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 3,
                 'name': 'mozza',
-                'weight': None,
+                'quantity': 1,
+                'weight': None
             } 
         ]

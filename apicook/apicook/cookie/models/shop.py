@@ -1,6 +1,7 @@
 from django.db import models
 from .recipe import Recipe
 from .ingredient import Ingredient
+from .article import Article
 from django.db.models import Sum
 
 
@@ -34,21 +35,69 @@ class Shop (models.Model):
             .annotate(weight=Sum('weight'))
         )
         for ingredient in ingredients:
-            if ingredient.quantity:
-                list = ShopList(shop=self)
-                list.ingredients = ingredient
-                list.save()
-            elif ingredient.weight:
-                list = ShopList(shop=self)
-                list.ingredients = ingredient
-                list.save()
-        return 
+            if ingredient['quantity']:
+                article = Article.objects.get(pk=ingredient['article_id'])
+                new_list = ShopList(article=article, shop=self)
+                new_list.total_quantity = ingredient['quantity']
+                new_list.save()
+
+            if ingredient['weight']:
+                article = Article.objects.get(pk=ingredient['article_id'])
+                new_list = ShopList(article=article, shop=self)
+                new_list.total_weight = ingredient['weight']
+                new_list.save()
 
 
 class ShopList(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    ingredients = models.ForeignKey("Ingredient", null=True, on_delete=models.CASCADE)
-    is_bought = models.BooleanField(default=False)
-    bought_value = models.IntegerField(null=True)
-    shop = models.OneToOneField("Shop", on_delete=models.CASCADE, null=True, related_name="ingredient_list")
-    status = models.BooleanField(default=False)
+    PARTIAL = 'PARTIAL'
+    COMPLETE = 'COMPLETE'
+    NOTTOUCH = 'NOTTOUCH'
+
+    BOUGHT_TYPE = (
+        (PARTIAL, 'PARTIAL'),
+        (COMPLETE, 'COMPLETE'),
+        (NOTTOUCH, 'NOTTOUCH'),
+    )
+
+    article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list")
+    bought_value = models.IntegerField(default=0)
+    shop = models.ForeignKey("Shop", null=True, on_delete=models.CASCADE, related_name='list_content')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    bought_status = models.CharField(default=NOTTOUCH, choices=BOUGHT_TYPE, max_length=10)
+
+    total_quantity = models.IntegerField("Quantité", null=True, blank=True)
+    total_weight = models.IntegerField("Poids", null=True, blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def update_bought_status(self):
+        if (
+            self.total_quantity is not None and 
+            self.bought_status != self.COMPLETE and 
+            self.bought_value == self.total_quantity
+        ):
+            self.bought_status = self.COMPLETE
+
+        elif (
+            self.total_weight is not None and 
+            self.bought_status != self.COMPLETE and 
+            self.bought_value == self.total_weight
+        ):  
+            self.bought_status = self.COMPLETE
+        
+        elif ( 
+            self.bought_status != self.PARTIAL and 
+            self.bought_value > 0 
+        ):
+                self.bought_status = self.PARTIAL 
+
+        elif self.bought_status != self.NOTTOUCH and self.bought_value == 0:
+            self.bought_status = self.NOTTOUCH
+
+    def save(self, *args, **kwargs):
+        self.update_bought_status()
+        super(ShopList, self).save(*args, **kwargs)
+        
+        

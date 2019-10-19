@@ -33,6 +33,8 @@ class GenerateListShopRecipe(APIView):
             shop = Shop()
             shop.save()
             shop.generate_random_recipe(number_recipe, excluded_recipe)
+        
+        shop.generate_shopping_list()
 
         data = ShopSerializer(shop).data
         return Response({**data})

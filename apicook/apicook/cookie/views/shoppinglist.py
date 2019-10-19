@@ -1,6 +1,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from apicook.cookie.models import  Shop, Article, ShopList
+from apicook.cookie.serializers import ShopListSerializer
 from rest_framework.views import APIView
 
 """
@@ -10,27 +11,32 @@ class ShoppingListRecipe(APIView):
 
     def get(self, request, shop_id = None):
         shop = Shop.objects.get(pk=shop_id)
-        is_bought = request.GET.get('is_bought')
-        if not is_bought:
-            is_bought = False
-       
-        return self._get_list_to_buy(is_bought, shop)
 
-    def _get_list_to_buy(self, is_bought, shop):
+        return self._get_list_to_buy(shop)
+
+    def _get_list_to_buy(self, shop):
         
-        shop_list = ShopList.objects.filter(shop_id=shop.id, is_bought=is_bought).prefetch_related('ingredients').first()
+        shop_list = shop.list_content.all()
 
         formated_ingredients = []
-        import pdb; pdb.set_trace()
-
-        for ingredient in shop_list.ingredients:
+        for ingredient in shop_list:
             formated_ingredient = {
-                'name': ingredredient.article.name,
-                'quantity': ingredient.quantity,
-                'weight': ingredient.weight,
+                'id': ingredient.id,
+                'name': ingredient.article.name,
+                'bought_value': ingredient.bought_value,
+                'bought_status': ingredient.bought_status,
+                'quantity': ingredient.total_quantity,
+                'weight': ingredient.total_weight,
             }
             formated_ingredients.append(formated_ingredient)   
 
         return Response(
             formated_ingredients
         )
+
+class ShoppingListViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = ShopList.objects.all()
+    serializer_class = ShopListSerializer
