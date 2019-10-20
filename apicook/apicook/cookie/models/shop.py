@@ -54,9 +54,9 @@ class ShopList(models.Model):
     NOTTOUCH = 'NOTTOUCH'
 
     BOUGHT_TYPE = (
-        (PARTIAL, 'PARTIAL'),
-        (COMPLETE, 'COMPLETE'),
-        (NOTTOUCH, 'NOTTOUCH'),
+        (PARTIAL, PARTIAL),
+        (COMPLETE, COMPLETE),
+        (NOTTOUCH, COMPLETE),
     )
 
     article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list")

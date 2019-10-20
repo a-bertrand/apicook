@@ -7,8 +7,24 @@ from django.db import models
 """
 
 class Ingredient(models.Model):
-    quantity = models.IntegerField("Quantité", null=True, blank=True)
-    weight = models.IntegerField("Poids", null=True, blank=True)
+    QUANITTY = 'x'
+    KG = 'kilogramme'
+    G = 'gramme'
+    L = 'litre'
+    CL = 'centilitre'
+    ML = 'millilitre'
+
+    MEASURE_TYPE = (
+        (QUANITTY, QUANITTY),
+        (KG, KG),
+        (G, G),
+        (L, L),
+        (CL, CL),
+        (ML, ML)
+    )
+
+    value = models.IntegerField("Quantité", null=True, blank=True)
+    measureType = models.CharField("Poids", choices=MEASURE_TYPE, null=True, blank=True)
     
     article = models.ForeignKey(
         "Article", 
