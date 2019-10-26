@@ -3,24 +3,24 @@ import pytest
 from django.urls import reverse
 from model_mommy import mommy
 from django.test import Client, TestCase
-from apicook.cookie.models import Recipe, Article
+from apicook.cookie.models import Recipe, Article, Ingredient
 
 
-class TestListRecipe(TestCase):
+class TestGenerateList(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        super(TestListRecipe, cls).setUpTestData()
+        super(TestGenerateList, cls).setUpTestData()
         cls.article = mommy.make('Article', name="tomate")
         cls.recipe = mommy.make(Recipe, title='tomate mozza')
-        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article, recipes=cls.recipe)
-    
+        cls.ingredient = mommy.make(Ingredient, quantity=1, article=cls.article, measure_type=Ingredient.KG, recipes=cls.recipe)
+
     def create_random_recipe(self):
         article = mommy.make('Article')
         recipe = mommy.make(Recipe)
-        mommy.make('Ingredient', quantity=1, article=article, recipes=recipe)
+        mommy.make('Ingredient', quantity=1, measure_type=Ingredient.KG, article=article, recipes=recipe)
         return recipe.id
-
+        
     def get_request_generate(self, number_recipe = 1):
         url = reverse("generate-shop-recipes")
         return Client().get(url + '?generate=true&number_recipe=' + str(number_recipe))
@@ -32,7 +32,7 @@ class TestListRecipe(TestCase):
     def test_generate_shop_recipes_status_OK(self):
         response = self.get_request_generate()
         assert response.status_code == HTTPStatus.OK
-
+    
     def test_generate_shop_recipes(self):
         mommy.make(Recipe)
         response = self.get_request_generate()

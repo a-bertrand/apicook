@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 from model_mommy import mommy
 from django.test import Client, TestCase
-from apicook.cookie.models import Recipe, Article
+from apicook.cookie.models import Recipe, Article, Ingredient
 
 
 class TestListRecipe(TestCase):
@@ -13,7 +13,7 @@ class TestListRecipe(TestCase):
         super(TestListRecipe, cls).setUpTestData()
         cls.article = mommy.make('Article', name="tomate")
         cls.recipe = mommy.make(Recipe, title='tomate mozza')
-        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article, recipes=cls.recipe)
+        cls.ingredient = mommy.make(Ingredient, quantity=1, measure_type=Ingredient.KG, article=cls.article, recipes=cls.recipe)
 
     def get_request(self):
         url = reverse("recipes-list")
@@ -37,7 +37,7 @@ class TestListRecipe(TestCase):
                             "name": "tomate"
                         },
                         "quantity": 1,
-                        "weight": None
+                        'measure_type': Ingredient.KG,
                     }
                 ],
                 "title": "tomate mozza",

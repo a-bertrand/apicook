@@ -25,8 +25,8 @@ class ShoppingListRecipe(APIView):
                 'name': ingredient.article.name,
                 'bought_value': ingredient.bought_value,
                 'bought_status': ingredient.bought_status,
+                'measure_type': ingredient.measure_type,
                 'quantity': ingredient.total_quantity,
-                'weight': ingredient.total_weight,
             }
             formated_ingredients.append(formated_ingredient)   
 

@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 from model_mommy import mommy
 from django.test import Client, TestCase
-from apicook.cookie.models import Recipe, Article
+from apicook.cookie.models import Recipe, Article, Ingredient
 
 class TestShoppingList(TestCase):
 
@@ -13,13 +13,13 @@ class TestShoppingList(TestCase):
         cls.article = mommy.make('Article', name="tomate")
         cls.article_mozza = mommy.make('Article', name="mozza")
         cls.recipe = mommy.make(Recipe, title='tomate mozza')
-        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article, recipes=cls.recipe)
-        cls.ingredient = mommy.make('Ingredient', quantity=1, article=cls.article_mozza, recipes=cls.recipe)
+        cls.ingredient = mommy.make('Ingredient', measure_type=Ingredient.KG, quantity=1, article=cls.article, recipes=cls.recipe)
+        cls.ingredient = mommy.make('Ingredient', measure_type=Ingredient.KG, quantity=1, article=cls.article_mozza, recipes=cls.recipe)
 
     def create_random_recipe(self):
         article = mommy.make('Article')
         recipe = mommy.make(Recipe)
-        mommy.make('Ingredient', quantity=1, article=article, recipes=recipe)
+        mommy.make('Ingredient', quantity=1, measure_type=Ingredient.KG, article=article, recipes=recipe)
         return recipe.id
 
 
@@ -33,9 +33,7 @@ class TestShoppingList(TestCase):
     
     def test_get_list_of_ingredients_in_shop_list(self):
         recipe = mommy.make(Recipe, title='duo de tomate')
-        ingredient = mommy.make('Ingredient', quantity=2, article=self.article, recipes=recipe)
-
-        # add recipe to check this recipe is not in list
+        ingredient = mommy.make('Ingredient', quantity=2, measure_type=Ingredient.KG, article=self.article, recipes=recipe)
 
         generate_list = self.get_request_generate(2).json()
 
@@ -51,56 +49,54 @@ class TestShoppingList(TestCase):
                 'bought_value': 0,
                 'id': 1,
                 'name': 'tomate',
+                'measure_type': Ingredient.KG,
                 'quantity': 3,
-                'weight': None
+            },
+            {
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 2,
+                'measure_type': Ingredient.KG,
+                'name': 'mozza',
+                'quantity': 1,
+            }  
+        ]
+
+    def test_get_list_of_ingredients_in_shop_list_with_different_measure_type(self):
+        recipe = mommy.make(Recipe, title='duo de tomate')
+        ingredient = mommy.make('Ingredient', quantity=1, measure_type=Ingredient.QUANTITY, article=self.article, recipes=recipe)
+
+        generate_list = self.get_request_generate(2).json()
+
+        self.create_random_recipe()
+
+        shop_id = generate_list.get('id')
+        generate_list = self.get_request(shop_id).json()
+
+        response = self.get_request(shop_id)
+        assert response.json() == [
+            {
+                'bought_status': 'NOTTOUCH',
+                'bought_value': 0,
+                'id': 1,
+                'name': 'tomate',
+                'measure_type': Ingredient.KG,
+                'quantity': 1,
             },
             {
                 'bought_status': 'NOTTOUCH',
                 'bought_value': 0,
                 'id': 2,
                 'name': 'mozza',
+                'measure_type': Ingredient.KG,
                 'quantity': 1,
-                'weight': None
-            }  
-        ]
-
-    def test_get_list_of_ingredients_in_shop_list_with_weight(self):
-        recipe = mommy.make(Recipe, title='duo de tomate')
-        ingredient = mommy.make('Ingredient', weight=2, article=self.article, recipes=recipe)
-
-        # add recipe to check this recipe is not in list
-
-        generate_list = self.get_request_generate(2).json()
-
-        self.create_random_recipe()
-
-        shop_id = generate_list.get('id')
-        generate_list = self.get_request(shop_id).json()
-
-        response = self.get_request(shop_id)
-        assert response.json() == [
-            {
-                'bought_status': 'NOTTOUCH',
-                'bought_value': 0,
-                'id': 1,
-                'name': 'tomate',
-                'quantity': 1,
-                'weight': None
-            },
-            {
-                'bought_status': 'NOTTOUCH',
-                'bought_value': 0,
-                'id': 2,
-                'name': 'tomate',
-                'quantity': None,
-                'weight': 2
             },
             {
                 'bought_status': 'NOTTOUCH',
                 'bought_value': 0,
                 'id': 3,
-                'name': 'mozza',
+                'name': 'tomate',
+                'measure_type': Ingredient.QUANTITY,
                 'quantity': 1,
-                'weight': None
-            } 
+            },
         ]

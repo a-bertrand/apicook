@@ -12,7 +12,7 @@ class IngredientSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(many=False)
     class Meta:
         model = Ingredient
-        fields = ('id', 'article', 'quantity', 'weight')
+        fields = ('id', 'article', 'quantity', 'measure_type')
 
 
 class RecipeSerializer(serializers.ModelSerializer):

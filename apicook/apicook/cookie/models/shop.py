@@ -27,25 +27,22 @@ class Shop (models.Model):
             self.recipes.add(recipe)
         self.save()
 
-    def generate_shopping_list(self):
-        ingredients = (
+    def _get_ordered_ingredients_from_reicpes_with_the_sum_of_their_quantity(self):
+        return ( 
             Ingredient.objects.filter(recipes__in=self.recipes.all())
-            .values('article_id')
-            .annotate(quantity=Sum('quantity'))
-            .annotate(weight=Sum('weight'))
+                .order_by('measure_type')
+                .values('article_id', 'measure_type')
+                .annotate(quantity=Sum('quantity')) 
         )
-        for ingredient in ingredients:
-            if ingredient['quantity']:
-                article = Article.objects.get(pk=ingredient['article_id'])
-                new_list = ShopList(article=article, shop=self)
-                new_list.total_quantity = ingredient['quantity']
-                new_list.save()
 
-            if ingredient['weight']:
-                article = Article.objects.get(pk=ingredient['article_id'])
-                new_list = ShopList(article=article, shop=self)
-                new_list.total_weight = ingredient['weight']
-                new_list.save()
+    def generate_shopping_list(self):
+        ingredients = self._get_ordered_ingredients_from_reicpes_with_the_sum_of_their_quantity()
+        
+        for ingredient in ingredients:
+            article = Article.objects.get(pk=ingredient['article_id'])
+            new_list = ShopList(article=article, shop=self, measure_type=ingredient['measure_type'])
+            new_list.total_quantity = ingredient['quantity']
+            new_list.save()
 
 
 class ShopList(models.Model):
@@ -68,7 +65,7 @@ class ShopList(models.Model):
     bought_status = models.CharField(default=NOTTOUCH, choices=BOUGHT_TYPE, max_length=10)
 
     total_quantity = models.IntegerField("Quantité", null=True, blank=True)
-    total_weight = models.IntegerField("Poids", null=True, blank=True)
+    measure_type = models.CharField("Type de mesure", choices=Ingredient.MEASURE_TYPE, max_length=20)
 
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -79,19 +76,12 @@ class ShopList(models.Model):
             self.bought_value == self.total_quantity
         ):
             self.bought_status = self.COMPLETE
-
-        elif (
-            self.total_weight is not None and 
-            self.bought_status != self.COMPLETE and 
-            self.bought_value == self.total_weight
-        ):  
-            self.bought_status = self.COMPLETE
         
         elif ( 
             self.bought_status != self.PARTIAL and 
             self.bought_value > 0 
         ):
-                self.bought_status = self.PARTIAL 
+            self.bought_status = self.PARTIAL 
 
         elif self.bought_status != self.NOTTOUCH and self.bought_value == 0:
             self.bought_status = self.NOTTOUCH
@@ -99,5 +89,3 @@ class ShopList(models.Model):
     def save(self, *args, **kwargs):
         self.update_bought_status()
         super(ShopList, self).save(*args, **kwargs)
-        
-        

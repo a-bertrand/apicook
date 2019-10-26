@@ -7,7 +7,7 @@ from django.db import models
 """
 
 class Ingredient(models.Model):
-    QUANITTY = 'x'
+    QUANTITY = 'x'
     KG = 'kilogramme'
     G = 'gramme'
     L = 'litre'
@@ -15,7 +15,7 @@ class Ingredient(models.Model):
     ML = 'millilitre'
 
     MEASURE_TYPE = (
-        (QUANITTY, QUANITTY),
+        (QUANTITY, QUANTITY),
         (KG, KG),
         (G, G),
         (L, L),
@@ -23,8 +23,8 @@ class Ingredient(models.Model):
         (ML, ML)
     )
 
-    value = models.IntegerField("Quantité", null=True, blank=True)
-    measureType = models.CharField("Poids", choices=MEASURE_TYPE, null=True, blank=True)
+    quantity = models.IntegerField("Quantité")
+    measure_type = models.CharField("Type de mesure", choices=MEASURE_TYPE, max_length=20)
     
     article = models.ForeignKey(
         "Article", 
