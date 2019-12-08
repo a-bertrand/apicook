@@ -80,6 +80,8 @@ docs/_build/
 # PyBuilder
 target/
 
+apicook/settings/prod.py
+apicook/settings/dev.py
 
 ### Django ###
 *.log
