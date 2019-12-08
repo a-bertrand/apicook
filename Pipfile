@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 django-filter = "==2.0.0"
-djangorestframework = "==3.9.0"
+djangorestframework = "==3.9.1"
 pytz = "==2018.7"
 pytest-cov = "*"
 pytest-django = "*"
