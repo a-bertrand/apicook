@@ -2,8 +2,12 @@
 import os
 import sys
 
+if os.getenv('ENVRONMENT_KEY') == "PROD":
+    settings = os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.prod")
+else:
+    settings = os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.dev")
+
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.common")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:

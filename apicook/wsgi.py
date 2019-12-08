@@ -11,6 +11,9 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.prod")
+if os.getenv('ENVRONMENT_KEY') == "PROD":
+    settings = os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.prod")
+else:
+    settings = os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apicook.settings.dev")
 
 application = get_wsgi_application()
