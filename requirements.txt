@@ -7,3 +7,5 @@ pytest-cov
 pytest-django
 model_mommy
 psycopg2-binary
+django-rest-auth
+django-allauth

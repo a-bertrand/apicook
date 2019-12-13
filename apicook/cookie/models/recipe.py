@@ -12,6 +12,9 @@ class Recipe(models.Model):
         blank=True, 
         null=True
     )
+    image = models.FileField(upload_to='recipes', null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.title

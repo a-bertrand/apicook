@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.decorators.csrf import csrf_exempt
+from apicook.sign.views import RegisterViewToken
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^cookie/', include('apicook.cookie.urls')),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/', csrf_exempt(RegisterViewToken.as_view()), name='rest_register'),
 ]

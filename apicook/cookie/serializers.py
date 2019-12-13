@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Article, Ingredient, Recipe, Shop, ShopList
+from .models import Article, Ingredient, Recipe, Shop, ShopList, Step
+from django.contrib.auth.models import User
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -15,15 +16,22 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'article', 'quantity', 'measure_type')
 
 
+class StepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Step
+        fields = '__all__'
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
+    steps = StepSerializer(many=True)
 
     class Meta:
         model = Recipe
         fields = '__all__'
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop('ingredeints')
+        ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         for ingredient in ingredients_data:
             Ingredient.objects.create(recipe=recipe, **ingredient)

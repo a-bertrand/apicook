@@ -4,11 +4,12 @@ from .recipe import RecipeViewSet
 from .shop import GenerateListShopRecipe
 from .shoppinglist import ShoppingListRecipe, ShoppingListViewSet
 
+
 __all__ = (
     ArticleViewSet,
     IngredientViewSet,
     RecipeViewSet,
     GenerateListShopRecipe,
     ShoppingListRecipe,
-    ShoppingListViewSet
+    ShoppingListViewSet,
 )
