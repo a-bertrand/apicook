@@ -13,7 +13,7 @@ class Recipe(models.Model):
         null=True
     )
     image = models.FileField(upload_to='recipes', null=True, blank=True)
-    owner = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE)
+    owner = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE, null=True)
 
 
     def __str__(self):

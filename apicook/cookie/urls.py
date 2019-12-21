@@ -13,9 +13,6 @@ router.register(r'shopping-list', ShoppingListViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    
     # Custom
     url(r'^api/', include(router.urls)),
     path('api/shop-recipes/', GenerateListShopRecipe.as_view(), name='generate-shop-recipes'),
