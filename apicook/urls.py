@@ -17,10 +17,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
 from apicook.sign.views import RegisterViewToken
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('apicook.cookie.urls')),
     url(r'^api/rest-auth/', include('rest_auth.urls')),
     url(r'^api/rest-auth/registration/', csrf_exempt(RegisterViewToken.as_view()), name='rest_register'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
