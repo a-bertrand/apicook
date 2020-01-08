@@ -9,16 +9,18 @@ router.register(r'recipes', RecipeViewSet,  basename='recipes')
 router.register(r'ingredients', IngredientViewSet)
 router.register(r'shopping-list', ShoppingListViewSet)
 
-# DJANGO REST ENDPOINT : https://django-rest-auth.readthedocs.io/en/latest/api_endpoints.html
-# Additionally, we include login URLs for the browsable API.
+
 urlpatterns = [
     url(r'^', include(router.urls)),
-    # Custom
+
     url(r'^api/', include(router.urls)),
+
     path('api/shop-recipes/', GenerateListShopRecipe.as_view(), name='generate-shop-recipes'),
     path('api/shop-recipes/<int:shop_id>', GenerateListShopRecipe.as_view(), name='regenerate-shop-recipes'),
+
+    path('api/shop-recipes-list/', ShoppingListRecipe.as_view(), name='list-shop'),
     path(
-        'api/shop-recipes/<int:shop_id>/shopping-list', 
+        'api/shop-recipes-list/<int:shop_id>', 
         ShoppingListRecipe.as_view(), 
         name="shopping-recipe-list"
     ),

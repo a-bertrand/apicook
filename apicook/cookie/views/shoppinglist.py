@@ -3,16 +3,36 @@ from rest_framework.response import Response
 from apicook.cookie.models import  Shop, Article, ShopList
 from apicook.cookie.serializers import ShopListSerializer
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 """
     Get ingredient list
 """
 class ShoppingListRecipe(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, shop_id = None):
-        shop = Shop.objects.get(pk=shop_id)
+        if shop_id:
+            asker_user = User.objects.get(pk=request.user.id)
+            shop = Shop.objects.get(pk=shop_id, contributor__in=asker_user)
 
-        return self._get_list_to_buy(shop)
+            return self._get_list_to_buy(shop)
+        else :
+            formated_shops =  []
+            shops = Shop.objects.get(contributor__in=asker_user)
+            for shop in shops.all():
+                formated_shop = {
+                    'id': shop.id,
+                    'created_at': shop.created_at
+                }
+            formated_shops.append(formated_shop) 
+            return Response (
+                formated_shops
+            )
 
     def _get_list_to_buy(self, shop):
         

@@ -10,8 +10,16 @@ class Shop (models.Model):
         "Recipe",
         blank=True,
     )
-    created = models.DateTimeField(auto_now_add=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
+    contributors = models.ManyToManyField(
+        'auth.User', 
+        related_name='shop', 
+        blank=True
+    )
+
     def __str__(self):
         return str(self.created)
 
@@ -58,16 +66,11 @@ class ShopList(models.Model):
 
     article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list")
     bought_value = models.IntegerField(default=0)
-    shop = models.ForeignKey("Shop", null=True, on_delete=models.CASCADE, related_name='list_content')
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    
     bought_status = models.CharField(default=NOTTOUCH, choices=BOUGHT_TYPE, max_length=10)
-
-    total_quantity = models.IntegerField("Quantité", null=True, blank=True)
     measure_type = models.CharField("Type de mesure", choices=Ingredient.MEASURE_TYPE, max_length=20)
+    shop = models.ForeignKey("Shop", null=True, on_delete=models.CASCADE, related_name='list_content')
+    total_quantity = models.IntegerField("Quantité", null=True, blank=True)
 
-    updated_at = models.DateTimeField(auto_now=True)
 
     def update_bought_status(self):
         if (
