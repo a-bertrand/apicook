@@ -26,9 +26,11 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
     steps = StepSerializer(many=True)
 
+    image_url_aze = serializers.SerializerMethodField('get_image_url') 
+
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = ('id', 'categories', 'ingredients', 'steps', 'title', 'text', 'image', 'owner', 'image_url_aze')
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
@@ -36,6 +38,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingredient in ingredients_data:
             Ingredient.objects.create(recipe=recipe, **ingredient)
         return recipe
+    
+    def get_image_url(self, obj):
+        return obj.image.url
 
 
 class ShopSerializer(serializers.ModelSerializer):

@@ -33,5 +33,5 @@ class RecipeAdmin(admin.ModelAdmin):
         IngredientInline,
         StepsInline
     ]
-    fields = ( 'image_tag', )
+    fields = ( 'image_tag', 'categories', 'title', 'text', 'image', 'owner')
     readonly_fields = ('image_tag',)

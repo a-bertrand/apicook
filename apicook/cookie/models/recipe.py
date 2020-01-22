@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.html import mark_safe
-
+from django.db.models.aggregates import Count
+from random import randint
 
 class Recipe(models.Model):
     categories = models.ManyToManyField(
@@ -24,6 +25,13 @@ class Recipe(models.Model):
     def image_tag(self):
         from django.utils.html import escape
         return mark_safe(f'<img src="{self.image.url}" />')
+
+    @classmethod
+    def get_random_recipe(self):
+        count = Recipe.objects.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        return Recipe.objects.all()[random_index]
+
 
 class Category(models.Model):
     name = models.CharField(max_length=30)

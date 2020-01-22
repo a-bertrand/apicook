@@ -1,6 +1,6 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
-from apicook.cookie.serializers import ShopSerializer
+from apicook.cookie.serializers import ShopSerializer, RecipeSerializer
 from apicook.cookie.models import Shop
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -25,8 +25,36 @@ class GenerateListShopRecipe(APIView):
     
     def get(self, request, shop_id = None, format=None):
         asker_user = User.objects.get(pk=request.user.id)
+        if shop_id:
+            try:
+                shop = Shop.objects.get(pk=shop_id, contributors__in=[asker_user])
+                return Response(
+                    RecipeSerializer(shop.recipes, many=True).data
+                )
+
+            except Exception as e:
+                return Response()
+
         asked_number_recipe = request.GET.get('number_recipe')
 
+        recipes = Shop.generate_random_recipe(asked_number_recipe)
+
+        return Response(
+            RecipeSerializer(recipes, many=True).data
+        )
+
+    def post(self, request):
+        asker_user = User.objects.get(pk=request.user.id)
+        recipe_list = request.POST.get('recipes')
+
+        shop = Shop()
+        shop.recipes = Recipe.objects.filter(id__in=recipe_list).all()
+        shop.save()
+        shop.contributors.set([asker_user])
+        shop.save()
+
+
+        """
         asked_excluded_recipe = []
         if (request.GET.get('excluded_recipe')) :
             asked_excluded_recipe = list(map(int, request.GET.get('excluded_recipe').split(',')))
@@ -52,4 +80,6 @@ class GenerateListShopRecipe(APIView):
         shop.generate_shopping_list()
 
         data = ShopSerializer(shop).data
+        print(data)
         return Response({**data})
+        """
