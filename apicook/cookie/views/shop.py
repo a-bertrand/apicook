@@ -23,21 +23,13 @@ class GenerateListShopRecipe(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, shop_id = None, format=None):
+    def get(self, request, shop_id = None, format=None, wanted_recipes=None):
         asker_user = User.objects.get(pk=request.user.id)
-        if shop_id:
-            try:
-                shop = Shop.objects.get(pk=shop_id, contributors__in=[asker_user])
-                return Response(
-                    RecipeSerializer(shop.recipes, many=True).data
-                )
-
-            except Exception as e:
-                return Response()
-
-        asked_number_recipe = request.GET.get('number_recipe')
-
-        recipes = Shop.generate_random_recipe(asked_number_recipe)
+        if wanted_recipes:
+            recipes = Shop.generate_random_recipe(len(wanted_recipes), wanted_recipes)
+        else:
+            asked_number_recipe = request.GET.get('number_recipe')
+            recipes = Shop.generate_random_recipe(asked_number_recipe)
 
         return Response(
             RecipeSerializer(recipes, many=True).data
