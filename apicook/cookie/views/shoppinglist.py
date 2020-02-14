@@ -59,5 +59,5 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = ShopList.objects.all()
+    queryset = ShoppingIngredientList.objects.all()
     serializer_class = ShopListSerializer
