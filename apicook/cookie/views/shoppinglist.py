@@ -1,6 +1,6 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
-from apicook.cookie.models import  Shop, Article, ShopList
+from apicook.cookie.models import  ShoppingRecipeList, Article, ShoppingIngredientList
 from apicook.cookie.serializers import ShopListSerializer
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -18,12 +18,13 @@ class ShoppingListRecipe(APIView):
     def get(self, request, shop_id = None):
         if shop_id:
             asker_user = User.objects.get(pk=request.user.id)
-            shop = Shop.objects.get(pk=shop_id, contributor__in=asker_user)
+            shop = ShoppingRecipeList.objects.get(pk=shop_id, contributor__in=asker_user)
 
             return self._get_list_to_buy(shop)
         else :
+            # Get all shop list
             formated_shops =  []
-            shops = Shop.objects.get(contributor__in=asker_user)
+            shops = ShoppingRecipeList.objects.get(contributor__in=asker_user).order_by('-created_at')
             for shop in shops.all():
                 formated_shop = {
                     'id': shop.id,

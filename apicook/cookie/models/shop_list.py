@@ -5,7 +5,7 @@ from .article import Article
 from django.db.models import Sum
 
 
-class ShoppingRecipeList (models.Model): 
+class ShopList (models.Model): 
     recipes = models.ManyToManyField(
         "Recipe",
         blank=True,
@@ -16,7 +16,7 @@ class ShoppingRecipeList (models.Model):
     
     contributors = models.ManyToManyField(
         'auth.User', 
-        related_name='shop', 
+        related_name='shop_list', 
         blank=True
     )
 
@@ -42,12 +42,12 @@ class ShoppingRecipeList (models.Model):
         
         for ingredient in ingredients:
             article = Article.objects.get(pk=ingredient['article_id'])
-            new_list = ShoppingIngredientList(article=article, shop=self, measure_type=ingredient['measure_type'])
+            new_list = ShopListDetail(article=article, shop_list=self, measure_type=ingredient['measure_type'])
             new_list.total_quantity = ingredient['quantity']
             new_list.save()
 
 
-class ShoppingIngredientList(models.Model):
+class ShopListDetail(models.Model):
     PARTIAL = 'PARTIAL'
     COMPLETE = 'COMPLETE'
     NOTTOUCH = 'NOTTOUCH'
@@ -58,15 +58,15 @@ class ShoppingIngredientList(models.Model):
         (NOTTOUCH, COMPLETE),
     )
 
-    article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list")
+    article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list_detail")
     bought_value = models.IntegerField(default=0)
     bought_status = models.CharField(default=NOTTOUCH, choices=BOUGHT_TYPE, max_length=10)
     measure_type = models.CharField("Type de mesure", choices=Ingredient.MEASURE_TYPE, max_length=20)
-    shop = models.ForeignKey("ShoppingRecipeList", null=True, on_delete=models.CASCADE, related_name='list_content')
+    shop_list = models.ForeignKey("ShopList", null=True, on_delete=models.CASCADE, related_name='list_content')
     total_quantity = models.IntegerField("Quantité", null=True, blank=True)
 
 
-    def _update_bought_status(self):
+    def update_bought_status(self):
         if (
             self.total_quantity is not None and 
             self.bought_status != self.COMPLETE and 
@@ -84,5 +84,5 @@ class ShoppingIngredientList(models.Model):
             self.bought_status = self.NOTTOUCH
 
     def save(self, *args, **kwargs):
-        self._update_bought_status()
-        super(ShoppingIngredientList, self).save(*args, **kwargs)
+        self.update_bought_status()
+        super(ShopListDetail, self).save(*args, **kwargs)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, Ingredient, Recipe, Shop, ShopList, Step
+from .models import Article, Ingredient, Recipe, ShoppingRecipeList, ShoppingIngredientList, Step
 from django.contrib.auth.models import User
 
 
@@ -47,12 +47,12 @@ class ShopSerializer(serializers.ModelSerializer):
     recipes = RecipeSerializer(many=True)
 
     class Meta:
-        model = Shop
+        model = ShoppingRecipeList
         fields = '__all__'
 
 
 class ShopListSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ShopList
+        model = ShoppingIngredientList
         fields = '__all__'

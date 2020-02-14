@@ -1,7 +1,7 @@
 from .article import Article
 from .ingredient import Ingredient
 from .recipe import Recipe, Category
-from .shop import Shop, ShopList
+from .shop import ShoppingRecipeList, ShoppingIngredientList
 from .step import Step
 
 __all__ = (
@@ -9,7 +9,7 @@ __all__ = (
     Category,
     Ingredient,
     Recipe,
-    Shop,
-    ShopList,
+    ShoppingRecipeList,
+    ShoppingIngredientList,
     Step
 )
