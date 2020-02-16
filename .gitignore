@@ -82,7 +82,7 @@ target/
 
 apicook/settings/prod.py
 apicook/settings/dev.py
-
+apicook/media/*
 ### Django ###
 *.log
 *.pot

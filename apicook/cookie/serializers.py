@@ -40,7 +40,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
     
     def get_image_url(self, obj):
-        return obj.image.url
+        if obj.image:
+            return obj.image.url
+        else: 
+            return ''
 
 
 class ShopSerializer(serializers.ModelSerializer):
