@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from apicook.cookie.serializers import ShopSerializer, RecipeSerializer
-from apicook.cookie.models import ShoppingRecipeList
+from apicook.cookie.models import ShoppingRecipeList, Recipe
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
@@ -22,31 +22,41 @@ from rest_framework.permissions import IsAuthenticated
 class GenerateListShopRecipe(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    
-    def get(self, request, shop_id = None, format=None, wanted_recipes=None):
+
+    def get(self, request):
         asker_user = User.objects.get(pk=request.user.id)
+        number_recipe = request.GET.get('number_recipe')
+        wanted_recipes = request.GET.get('wanted_recipes')
         if wanted_recipes:
-            recipes = ShoppingRecipeList.generate_random_recipe(len(wanted_recipes), wanted_recipes)
+            arrayOfRecipeIds = wanted_recipes.split(',')
+            old_recipes = Recipe.objects.filter(id__in=arrayOfRecipeIds).all()
+            recipes = ShoppingRecipeList.generate_random_recipe(number_recipe, arrayOfRecipeIds)
         else:
-            asked_number_recipe = request.GET.get('number_recipe')
-            recipes = ShoppingRecipeList.generate_random_recipe(asked_number_recipe)
+            recipes = ShoppingRecipeList.generate_random_recipe(number_recipe)
 
         return Response(
             RecipeSerializer(recipes, many=True).data
         )
 
+
     def post(self, request):
         asker_user = User.objects.get(pk=request.user.id)
-        recipe_list = request.POST.get('recipes')
+        recipes = request.data
+
+        recipe_id_list = [recipe.get('id') for recipe in recipes]
 
         shopping_recipe_list = ShoppingRecipeList()
-        shopping_recipe_list.recipes = Recipe.objects.filter(id__in=recipe_list).all()
         shopping_recipe_list.save()
+        shopping_recipe_list.recipes.set(Recipe.objects.filter(id__in=recipe_id_list).all())
         shopping_recipe_list.contributors.set([asker_user])
         shopping_recipe_list.save()
 
-
+        return Response({'shop-list-id': shopping_recipe_list.id})
         """
+
+        , format=None):
+        asked_number_recipe = request.GET.get('number_recipe')
+        wanted_recipes = request.GET.get('
         asked_excluded_recipe = []
         if (request.GET.get('excluded_recipe')) :
             asked_excluded_recipe = list(map(int, request.GET.get('excluded_recipe').split(',')))

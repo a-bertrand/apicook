@@ -3,6 +3,7 @@ from .recipe import Recipe
 from .ingredient import Ingredient
 from .article import Article
 from django.db.models import Sum
+from itertools import chain
 
 
 class ShoppingRecipeList (models.Model): 
@@ -21,13 +22,19 @@ class ShoppingRecipeList (models.Model):
     )
 
     def __str__(self):
-        return str(self.created)
+        return str(self.created_at)
 
-    def generate_random_recipe(number_of_recipe, excluded_ids = []):
+    @staticmethod
+    def generate_random_recipe(number_of_recipe = None, keeped_recipe_ids = []):
         if number_of_recipe == None:
             number_of_recipe = 1
 
-        return  Recipe.objects.order_by("?").exclude(id__in=excluded_ids)[:int(number_of_recipe)]
+        if keeped_recipe_ids != []:
+           keeped_recipe = Recipe.objects.filter(id__in=keeped_recipe_ids).all()
+           number_of_recipe = int(number_of_recipe) - len(list(keeped_recipe))
+           return chain(Recipe.objects.order_by("?").exclude(id__in=keeped_recipe_ids)[:int(number_of_recipe)], keeped_recipe)
+
+        return Recipe.objects.order_by("?").exclude(id__in=keeped_recipe_ids)[:int(number_of_recipe)]
 
     def _get_ordered_ingredients_from_reicpes_with_the_sum_of_their_quantity(self):
         return ( 

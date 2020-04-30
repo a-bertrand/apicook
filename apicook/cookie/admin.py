@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Article, Ingredient, Recipe, Category, Step
+from .models import Article, Ingredient, Recipe, Category, Step, ShoppingRecipeList
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -20,6 +20,9 @@ class CategoryAdmin(admin.ModelAdmin):
 class StepsAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(ShoppingRecipeList)
+class ShoppingRecipeListAdmin(admin.ModelAdmin):
+    pass
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
