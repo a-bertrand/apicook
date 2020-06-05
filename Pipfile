@@ -11,7 +11,7 @@ djangorestframework = "==3.9.0"
 pytz = "==2018.7"
 pytest-cov = "*"
 pytest-django = "*"
-Django = "==2.2.4"
+Django = "==2.2.13"
 Markdown = "==3.0.1"
 model_mommy = "*"
 
