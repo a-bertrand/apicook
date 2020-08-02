@@ -1,17 +1,21 @@
 import requests
 import tempfile
 from django.core.management.base import BaseCommand
-from apicook.cookie.models import Recipe, Article, Ingredient, Category
+from apicook.cookie.models import Recipe, Article, Ingredient, Category, MatchKeywords
 import urllib
 from django.core import files
 import re
 
 class Command(BaseCommand):
 
+    keyword_list = {}
+
     def handle(self, *args, **options):
 
         print('------ START IMPORT ')
         id_one = '5e47c58622b9bf4074b82faf'
+        key = '0cdf547b55d2500b0ff411de2c5278ba'
+        token = '4f902678282fe58f81bc7b4a0709f38ca92694ebe887727a6d098fdbdf36c443'
 
 
         base_url = 'https://api.trello.com/1/'
@@ -19,6 +23,8 @@ class Command(BaseCommand):
         attachment_endpoint_name = 'attachments' # apres cards
         checklist_endpoint_name = 'checklists' # solo ou pas
         cards_endpoint_name = 'cards'
+
+        self.keyword_list = self._get_measure_type_keywords()
 
         url_cards_on_board = f'{base_url}boards/{board_id}/{cards_endpoint_name}/?key={key}&token={token}'
         #url_one_cards_on_board = f'{base_url}boards/{board_id}/{cards_endpoint_name}/{id_one}/?key={key}&token={token}'
@@ -31,6 +37,8 @@ class Command(BaseCommand):
         trello_recipes = payloads.json()
 
         # for ONE recipe trello
+
+        Article.objects.all().delete()
         
         for recipe_trello in trello_recipes:
             trello_card_id = recipe_trello.get('id')
@@ -115,15 +123,10 @@ class Command(BaseCommand):
             'ou', 'boite'
         ]
 
-        measure_words_list = [
-            'g', 'l', 'kg', 'cl', 'ml', 'mg', 'c', 'cuillere à soupe'
-            'cuilliere à café'
-        ]
-
         between_paranthese_REGEX = '\(([^\)]+)\)' 
         quantity_REGEX = '\d+'
         quanitty_found = re.findall(quantity_REGEX, name)
-        quantity = 0
+        quantity = '0'
         if quanitty_found:
             quantity =  quanitty_found[0]
         #print(quantity)
@@ -133,30 +136,64 @@ class Command(BaseCommand):
         #print(name_number_cleaned)
         array_name = name_number_cleaned.split()
         #clean in keyword list
+        
         resultwords  = [word for word in array_name if word.lower() not in key_words_list]
         #print(resultwords)
         result_name = ' '.join(resultwords)
         #print(result_name)
+        measure_type = None
+        if int(quantity) > 0:
+            # 0 key, 1 word
+            results = self._get_measure_type_in_str(name_number_quantity_cleaned)
+            if results is not None:
+                measure_type = results[0]
+                result_name = result_name.replace(results[1],"",1)
+
         article = self._get_or_update_article_name(result_name)
-        #print(article)
+
         try:
             ingredient = Ingredient(article=article, quantity=quantity)
             ingredient.recipes = recipe
+            if measure_type is not None:
+                ingredient.measure_type = measure_type
+
             ingredient.save()
+
         except Exception as e:
-            #print('ingredient err')
-            #print(ingredient)
-            #print(e)
+            print('ingredient err')
+            print(ingredient)
+            print(e)
             ingredient.delete()
 
     def _get_or_update_article_name(self, name):
         #print('article')
         finded_article = Article.objects.filter(name=name).first()
         if finded_article:
-            #print('find article')
+            finded_article.how_many_found_in_recipes = finded_article.how_many_found_in_recipes + 1
+            finded_article.save()
             return finded_article
         else:
             #print('create article')
             new_article = Article(name=name)
             new_article.save()
             return new_article
+    
+    def _get_measure_type_keywords(self):
+        keywords = MatchKeywords.objects.order_by('order').all()
+        keywordsDict = {}
+        for keyword in keywords:
+            keywordsDict[keyword.measure_type] = keyword.keywords.split(',')
+        return keywordsDict
+
+    def _get_measure_type_in_str(self, text):
+        for key in self.keyword_list:
+            for word in self.keyword_list[key]:
+                result = text.find(word)
+                # 5 is to prevent to find G after 5 letter
+                
+                if result != -1 and result < 3: 
+                    return [key, word]
+        return None
+
+            
+            

@@ -8,19 +8,27 @@ from django.db import models
 
 class Ingredient(models.Model):
     QUANTITY = 'x'
-    KG = 'kilogramme'
-    G = 'gramme'
-    L = 'litre'
-    CL = 'centilitre'
-    ML = 'millilitre'
+    MG = 'Milligramme'
+    KG = 'Kilogramme'
+    G = 'Gramme'
+    L = 'Litre'
+    CL = 'Centilitre'
+    ML = 'Millilitre'
+    CC = 'Cuillère à café'
+    CS = 'Cuillère à soupe'
+    GOU = 'GOUSSE'
 
     MEASURE_TYPE = (
         (QUANTITY, QUANTITY),
+        (MG,MG),
         (KG, KG),
         (G, G),
         (L, L),
         (CL, CL),
-        (ML, ML)
+        (ML, ML),
+        (CC, CC),
+        (CS, CS),
+        (GOU,GOU)
     )
 
     quantity = models.IntegerField("Quantité")

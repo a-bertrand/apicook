@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Article, Ingredient, Recipe, Category, Step, ShoppingRecipeList
+from .models import Article, Ingredient, Recipe, Category, Step, ShoppingRecipeList, MatchKeywords
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -10,7 +10,7 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name','how_many_found_in_recipes',)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -24,11 +24,19 @@ class StepsAdmin(admin.ModelAdmin):
 class ShoppingRecipeListAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(MatchKeywords)
+class StepsInline(admin.ModelAdmin):
+    list_display = ('measure_type', 'order')
+    model = MatchKeywords
+    ordering = ('order',)
+
 class IngredientInline(admin.TabularInline):
     model = Ingredient
 
 class StepsInline(admin.TabularInline):
     model = Step
+
+
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
