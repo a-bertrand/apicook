@@ -115,6 +115,11 @@ class Command(BaseCommand):
             'ou', 'boite'
         ]
 
+        measure_words_list = [
+            'g', 'l', 'kg', 'cl', 'ml', 'mg', 'c', 'cuillere à soupe'
+            'cuilliere à café'
+        ]
+
         between_paranthese_REGEX = '\(([^\)]+)\)' 
         quantity_REGEX = '\d+'
         quanitty_found = re.findall(quantity_REGEX, name)
