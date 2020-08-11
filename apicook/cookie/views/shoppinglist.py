@@ -16,28 +16,29 @@ class ShoppingListRecipe(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, shop_id = None):
+        
+        asker_user = User.objects.get(pk=request.user.id)
         if shop_id:
-            asker_user = User.objects.get(pk=request.user.id)
-            shop = ShoppingRecipeList.objects.get(pk=shop_id, contributor__in=asker_user)
-
+            shop = ShoppingRecipeList.objects.get(pk=shop_id, contributors__in=[asker_user])
+            
             return self._get_list_to_buy(shop)
+        
         else :
             # Get all shop list
             formated_shops =  []
-            shops = ShoppingRecipeList.objects.get(contributor__in=asker_user).order_by('-created_at')
+            shops = ShoppingRecipeList.objects.filter(contributors__in=[asker_user]).order_by('-created_at')
             for shop in shops.all():
-                formated_shop = {
+                formated_shops.append({
                     'id': shop.id,
                     'created_at': shop.created_at
-                }
-            formated_shops.append(formated_shop) 
+                })
             return Response (
                 formated_shops
             )
 
     def _get_list_to_buy(self, shop):
         
-        shop_list = shop.list_content.all()
+        shop_list = shop.list_content.order_by('article__name').all()
 
         formated_ingredients = []
         for ingredient in shop_list:

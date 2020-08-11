@@ -120,8 +120,10 @@ class Command(BaseCommand):
         key_words_list = [
             'cuil.', 'c.', 'à', '**', 'cuillere', 
             'cuilleres', 'à café', 'à soupe', 'gouttes', 
-            'ou', 'boite'
+            'ou', 'boite', 'de ', ':'
         ]
+        
+        word_separator_split = ','
 
         between_paranthese_REGEX = '\(([^\)]+)\)' 
         quantity_REGEX = '\d+'
@@ -134,50 +136,68 @@ class Command(BaseCommand):
         name_number_cleaned =  re.sub(between_paranthese_REGEX, '', name_number_quantity_cleaned)
         
         #print(name_number_cleaned)
-        array_name = name_number_cleaned.split()
+        array_name = re.split(word_separator_split, name_number_cleaned)
         #clean in keyword list
-        
+        #print(array_name)
         resultwords  = [word for word in array_name if word.lower() not in key_words_list]
         #print(resultwords)
-        result_name = ' '.join(resultwords)
-        #print(result_name)
-        measure_type = None
-        if int(quantity) > 0:
-            # 0 key, 1 word
-            results = self._get_measure_type_in_str(name_number_quantity_cleaned)
-            if results is not None:
-                measure_type = results[0]
-                result_name = result_name.replace(results[1],"",1)
+        #result_name = ' '.join(resultwords)
 
-        article = self._get_or_update_article_name(result_name)
+        for result_name in resultwords:
+            #print(result_name)
+            measure_type = None
+            if int(quantity) > 0:
+                # 0 key, 1 word
+                results = self._get_measure_type_in_str(name_number_quantity_cleaned)
+                if results is not None:
+                    measure_type = results[0]
+                    result_name = result_name.replace(results[1],"",1)
 
-        try:
-            ingredient = Ingredient(article=article, quantity=quantity)
-            ingredient.recipes = recipe
-            if measure_type is not None:
-                ingredient.measure_type = measure_type
+            article = self._get_or_update_article_name(result_name)
 
-            ingredient.save()
+            try:
+                ingredient = Ingredient(article=article, quantity=quantity)
+                ingredient.recipes = recipe
+                if measure_type is not None:
+                    ingredient.measure_type = measure_type
 
-        except Exception as e:
-            print('ingredient err')
-            print(ingredient)
-            print(e)
-            ingredient.delete()
+                ingredient.save()
+
+            except Exception as e:
+                print('ingredient err')
+                print(ingredient)
+                print(e)
+                ingredient.delete()
 
     def _get_or_update_article_name(self, name):
         #print('article')
-        finded_article = Article.objects.filter(name=name).first()
-        if finded_article:
+        cleaned_name = self._adapt_article_name(name)
+        finded_article = Article.objects.filter(name__contains=cleaned_name).first()
+        
+        if finded_article and len(finded_article.name) <= (len(cleaned_name) + 2):
             finded_article.how_many_found_in_recipes = finded_article.how_many_found_in_recipes + 1
             finded_article.save()
             return finded_article
         else:
+            #print('------- not work for')
+            #print('|' + cleaned_name+ '|')
+
             #print('create article')
-            new_article = Article(name=name)
+            new_article = Article(name=cleaned_name)
             new_article.save()
             return new_article
     
+    def _adapt_article_name(self, name):
+        if name[0] == ' ':
+            name = name.replace(' ','',1)
+            
+        if name[len(name) - 1] == ' ':
+            name = name[:-1]
+        
+        name = name.replace('œ','oe',1)
+        
+        return name.lower()
+        
     def _get_measure_type_keywords(self):
         keywords = MatchKeywords.objects.order_by('order').all()
         keywordsDict = {}

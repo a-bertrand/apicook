@@ -50,38 +50,7 @@ class GenerateListShopRecipe(APIView):
         shopping_recipe_list.recipes.set(Recipe.objects.filter(id__in=recipe_id_list).all())
         shopping_recipe_list.contributors.set([asker_user])
         shopping_recipe_list.save()
+        
+        shopping_recipe_list.generate_shopping_list()
 
         return Response({'shop-list-id': shopping_recipe_list.id})
-        """
-
-        , format=None):
-        asked_number_recipe = request.GET.get('number_recipe')
-        wanted_recipes = request.GET.get('
-        asked_excluded_recipe = []
-        if (request.GET.get('excluded_recipe')) :
-            asked_excluded_recipe = list(map(int, request.GET.get('excluded_recipe').split(',')))
-        
-        want_generate = request.GET.get('generate') == 'true' if request.GET.get('generate') else False
-
-        if shop_id:
-            try:
-                shop = Shop.objects.get(pk=shop_id, contributors__in=[asker_user])
-                if want_generate:
-                    shop.generate_random_recipe(asked_number_recipe, asked_excluded_recipe)
-            except Exception as e:
-                #Error TODO make beautiful response
-                return Response()
-            
-        else:
-            shop = Shop()
-            shop.save()
-            shop.contributors.set([asker_user])
-            shop.save()
-            shop.generate_random_recipe(asked_number_recipe, asked_excluded_recipe)
-        
-        shop.generate_shopping_list()
-
-        data = ShopSerializer(shop).data
-        print(data)
-        return Response({**data})
-        """

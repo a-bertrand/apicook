@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
 
     'corsheaders',
+    'import_export',
 ]
 
 
@@ -58,7 +59,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 SITE_ID = 1

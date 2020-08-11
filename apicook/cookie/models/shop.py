@@ -46,7 +46,6 @@ class ShoppingRecipeList (models.Model):
 
     def generate_shopping_list(self):
         ingredients = self._get_ordered_ingredients_from_reicpes_with_the_sum_of_their_quantity()
-        
         for ingredient in ingredients:
             article = Article.objects.get(pk=ingredient['article_id'])
             new_list = ShoppingIngredientList(article=article, shop=self, measure_type=ingredient['measure_type'])
@@ -62,7 +61,7 @@ class ShoppingIngredientList(models.Model):
     BOUGHT_TYPE = (
         (PARTIAL, PARTIAL),
         (COMPLETE, COMPLETE),
-        (NOTTOUCH, COMPLETE),
+        (NOTTOUCH, NOTTOUCH),
     )
 
     article = models.ForeignKey("Article", null=True, on_delete=models.CASCADE, related_name="shop_list")

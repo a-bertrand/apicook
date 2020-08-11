@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, Ingredient, Recipe, ShoppingRecipeList, ShoppingIngredientList, Step
+from .models import Article, Ingredient, Recipe, ShoppingRecipeList, ShoppingIngredientList, Step, Category
 from django.contrib.auth.models import User
 
 
@@ -11,14 +11,24 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(many=False)
+    measure_type = serializers.SerializerMethodField(source='get_measure_type')
     class Meta:
         model = Ingredient
-        fields = ('id', 'article', 'quantity', 'measure_type')
+        fields = ('id', 'article', 'quantity', 'measure_type',)
+        
+    def get_measure_type(self,obj):
+        return obj.get_measure_type_display()
 
 
 class StepSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
+        fields = '__all__'
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
         fields = '__all__'
 
 

@@ -2,7 +2,13 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Article, Ingredient, Recipe, Category, Step, ShoppingRecipeList, MatchKeywords
+from .models import (
+        Article, Ingredient, 
+        Recipe, Category, Step, 
+        ShoppingRecipeList, MatchKeywords, 
+        ShoppingIngredientList
+    )
+from import_export.admin import ImportExportModelAdmin
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -20,12 +26,18 @@ class CategoryAdmin(admin.ModelAdmin):
 class StepsAdmin(admin.ModelAdmin):
     pass
 
+class ShoppingIngredientListInline(admin.TabularInline):
+    model = ShoppingIngredientList
+
 @admin.register(ShoppingRecipeList)
 class ShoppingRecipeListAdmin(admin.ModelAdmin):
-    pass
+    inlines = [
+        ShoppingIngredientListInline,
+    ]
+
 
 @admin.register(MatchKeywords)
-class StepsInline(admin.ModelAdmin):
+class StepsInline(ImportExportModelAdmin):
     list_display = ('measure_type', 'order')
     model = MatchKeywords
     ordering = ('order',)
@@ -35,8 +47,6 @@ class IngredientInline(admin.TabularInline):
 
 class StepsInline(admin.TabularInline):
     model = Step
-
-
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
