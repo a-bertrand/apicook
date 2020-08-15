@@ -17,7 +17,6 @@ class Command(BaseCommand):
         key = '0cdf547b55d2500b0ff411de2c5278ba'
         token = '4f902678282fe58f81bc7b4a0709f38ca92694ebe887727a6d098fdbdf36c443'
 
-
         base_url = 'https://api.trello.com/1/'
         board_id = 'DpFpOnQ6'
         attachment_endpoint_name = 'attachments' # apres cards
@@ -28,6 +27,8 @@ class Command(BaseCommand):
 
         url_cards_on_board = f'{base_url}boards/{board_id}/{cards_endpoint_name}/?key={key}&token={token}'
         #url_one_cards_on_board = f'{base_url}boards/{board_id}/{cards_endpoint_name}/{id_one}/?key={key}&token={token}'
+        
+        
 
         #print('--- Import payloads')
         payloads = requests.get(
@@ -44,6 +45,8 @@ class Command(BaseCommand):
             trello_card_id = recipe_trello.get('id')
             base_card_url = f'{base_url}/{cards_endpoint_name}/{trello_card_id}'
         
+            custom_fields_url = f'{base_card_url}/customFieldItems/?key={key}&token={token}'
+
             new_recipe = Recipe()
             new_recipe.title = recipe_trello.get('name')
             new_recipe.text = recipe_trello.get('desc')
@@ -55,6 +58,15 @@ class Command(BaseCommand):
                 f'{base_card_url}/{attachment_endpoint_name}/?key={key}&token={token}'
             )
             attachements = requests.get(attachements_url)
+
+            custom_fields = requests.get(custom_fields_url)
+            
+            for field in custom_fields.json(): 
+                try:
+                    how_many = field.get('value').get('number')
+                    new_recipe.how_many = how_many
+                except:
+                    print('pas de how many')
 
             extensions_img = ('.jpg', '.JPG', '.PNG', '.png', '.jpeg', '.JPEG')
             for attachement in attachements.json():

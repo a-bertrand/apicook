@@ -17,6 +17,7 @@ class Recipe(models.Model):
     )
     image = models.FileField(upload_to='recipes/', null=True, blank=True)
     owner = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE, null=True, blank=True)
+    how_many = models.IntegerField(null=True)
 
 
     def __str__(self):

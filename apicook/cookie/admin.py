@@ -37,7 +37,7 @@ class ShoppingRecipeListAdmin(admin.ModelAdmin):
 
 
 @admin.register(MatchKeywords)
-class StepsInline(ImportExportModelAdmin):
+class MatchKeywords(ImportExportModelAdmin):
     list_display = ('measure_type', 'order')
     model = MatchKeywords
     ordering = ('order',)
@@ -54,5 +54,5 @@ class RecipeAdmin(admin.ModelAdmin):
         IngredientInline,
         StepsInline
     ]
-    fields = ( 'image_tag', 'categories', 'title', 'text', 'image', 'owner')
+    fields = ( 'image_tag', 'categories', 'title', 'text', 'image', 'owner', 'how_many')
     readonly_fields = ('image_tag',)

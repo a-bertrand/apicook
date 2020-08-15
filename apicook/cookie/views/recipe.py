@@ -11,12 +11,21 @@ import json
 
 
 class RecipeViewSet(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+
+    PER_PAGE = 20
     
-    def get(self, request):
+    def get(self, request, recipe_id = None):
+        if recipe_id:
+            return Response(
+                RecipeSerializer(
+                    Recipe.objects.get(pk=recipe_id)
+                ).data
+            )
+
         title = request.GET.get('title')
         categories = json.loads(request.GET.get('categories'))
+        page = json.loads(request.GET.get('page'))
+        offset = self.PER_PAGE * int(page)
         
         recipes = Recipe.objects.filter(title__icontains=title)
         if len(categories) != 0:
@@ -32,7 +41,7 @@ class RecipeViewSet(APIView):
             RecipeSerializer(
                 recipes,
                 many=True
-            ).data
+            ).data[offset:self.PER_PAGE + offset]
         )
 
     def array_subset_array(self, array1, array2):

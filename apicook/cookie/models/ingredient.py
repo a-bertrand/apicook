@@ -39,6 +39,7 @@ class Ingredient(models.Model):
         related_name=("ingredients"), 
         on_delete=models.CASCADE
     )
+    name = ""
     recipes = models.ForeignKey(
         "Recipe", 
         verbose_name=("Recette"), 

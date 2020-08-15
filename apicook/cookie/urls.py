@@ -29,4 +29,5 @@ urlpatterns = [
     ),
     
     path('api/recipes/',  RecipeViewSet.as_view(),  name='recipes'),
+    path('api/recipes/<int:recipe_id>/',  RecipeViewSet.as_view(),  name='recipes'),
 ]
