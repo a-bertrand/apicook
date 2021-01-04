@@ -26,7 +26,7 @@ class ShoppingListRecipe(APIView):
         else :
             # Get all shop list
             formated_shops =  []
-            shops = ShoppingRecipeList.objects.filter(contributors__in=[asker_user]).order_by('-created_at')
+            shops = ShoppingRecipeList.objects.filter(contributors__in=[asker_user]).order_by('created_at')
             for shop in shops.all():
                 formated_shops.append({
                     'id': shop.id,
